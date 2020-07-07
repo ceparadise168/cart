@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Ceparadise168\Cart\Cart;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +15,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    /*
     return view('welcome');
+    */
+    $cart = new Cart();
+    return $cart->result();
 });

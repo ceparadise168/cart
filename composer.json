@@ -34,7 +34,8 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Ceparadise168\\Cart\\": "packges/ceparadise168/cart/src"
         },
         "classmap": [
             "database/seeds",

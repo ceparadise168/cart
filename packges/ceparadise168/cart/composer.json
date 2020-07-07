@@ -1,0 +1,23 @@
+{
+    "name": "ceparadise168/cart",
+    "authors": [
+        {
+            "name": "Eric Tu",
+            "email": "ceparadise168@gmail.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^8.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ceparadise168\\Cart\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ceparadise168\\Cart\\Tests\\": "tests/"
+        }
+    }
+}
