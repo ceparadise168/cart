@@ -50,6 +50,7 @@ jobs:
 
       # prepare the database
       - run: cp .env.example .env.testing
+      - run: php artisan key:generate --env=testing
       - run: sed -i 's/DB_CONNECTION=mysql/DB_CONNECTION=sqlite/'  .env.testing
       - run: sed -i 's/DB_DATABASE=laravel/DB_DATABASE=:memory:/'  .env.testing
       - run: touch storage/testing.sqlite
