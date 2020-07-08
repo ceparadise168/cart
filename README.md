@@ -2,9 +2,9 @@
 ===
 
 ## 目標:
-- [x] 設計一個購物車物件，這個物件可以增加商品、計算總價、回傳商品總數量
+- [x] 設計一個購物車物件，這個物件可以增加商品、計算總價、回傳商品總數量。
 
-- [x] 設計成能以 PSR-4 載入的套件
+- [x] 設計成能以 PSR-4 載入的套件。
 
 - [ ] 重構商品
 
@@ -13,6 +13,8 @@
 - [ ] 增加購物車功能
 
 - [ ] 發佈套件
+
+- [x] 研究 CircleCI
 
 ## 建立專案
 
@@ -484,15 +486,149 @@ OK (4 tests, 4 assertions)
 ```
 
 
+### 整合 CircleCi
+![](https://i.imgur.com/m7tD1G0.png)
+
+```
+# PHP CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-php/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # Specify the version you desire here
+      - image: circleci/php:7.1-node-browsers
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # Using the RAM variation mitigates I/O contention
+      # for database intensive operations.
+      # - image: circleci/mysql:5.7-ram
+      #
+      # - image: redis:2.8.19
+
+    steps:
+      - checkout
+
+      - run: sudo apt update # PHP CircleCI 2.0 Configuration File# PHP CircleCI 2.0 Configuration File sudo apt install zlib1g-dev libsqlite3-dev
+      - run: sudo docker-php-ext-install zip
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            # "composer.lock" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: composer install -n --prefer-dist
+
+      - save_cache:
+          key: v1-dependencies-{{ checksum "composer.json" }}
+          paths:
+            - ./vendor
+      - restore_cache:
+          keys:
+            - node-v1-{{ checksum "package.json" }}
+            - node-v1-
+      - run: yarn install
+      - save_cache:
+          key: node-v1-{{ checksum "package.json" }}
+          paths:
+            - node_modules
+
+      # prepare the database
+      - run: touch storage/testing.sqlite
+      - run: php artisan migrate --env=testing --database=sqlite_testing --force
+
+      # run tests with phpunit or codecept
+      #- run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/codecept build
+      - run: ./vendor/bin/codecept run
+
+```
+
+最後面測試的 block 調整如下
+
+```
+      #- run: ./vendor/bin/codecept build
+      #- run: ./vendor/bin/codecept run
+      - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpunit -c ./packges/ceparadise168/cart/phpunit.xml
+```
+
+建置失敗
+
+![](https://i.imgur.com/RWpK24H.png)
+
+PHP 版本太舊，找看看官方有沒有更新的
+
+https://hub.docker.com/r/circleci/php/tags?page=1&name=7.2-node-browsers
+
+調整 config.yaml 檔案修正以下問題
+```
+commit 5737444eb6496c82becd044743ca19af805d6fb8 (HEAD, origin/circleci-project-setup)
+Author: eric_tu <ceparadise168@gmail.com>
+Date:   Thu Jul 9 03:00:52 2020 +0800
+
+    [Bug] Fix no application encryption key has been specified
+
+    - 建置測試流程新增測試環境 APP_KEY
+
+commit 2289ca03591fdcb252ce8f850ade4c08f30e24e7
+Author: eric_tu <ceparadise168@gmail.com>
+Date:   Thu Jul 9 02:39:53 2020 +0800
+
+    [Bug] 修正 circleci config.yaml sed 未執行
+
+commit c1cb28d5d8ded77f5fbef741ec4836405b505f7f
+Author: eric_tu <ceparadise168@gmail.com>
+Date:   Thu Jul 9 02:34:52 2020 +0800
+
+    [Bug] Fix testing env
+
+    - circleci confix 新增複製 .env.testing 設定
+    - 調整測試用資料庫設定
+
+commit 80ece6c05dfc9e84124cbaa33e8902779359b513
+Author: eric_tu <ceparadise168@gmail.com>
+Date:   Thu Jul 9 02:08:41 2020 +0800
+
+    [Fix] Update circleci images with php72
+
+```
+
+調整內容如下
+
+```
+      # prepare the database
+      - run: cp .env.example .env.testing
+      - run: php artisan key:generate --env=testing
+      - run: sed -i 's/DB_CONNECTION=mysql/DB_CONNECTION=sqlite/'  .env.testing
+      - run: sed -i 's/DB_DATABASE=laravel/DB_DATABASE=:memory:/'  .env.testing
+      - run: touch storage/testing.sqlite
+      - run: php artisan migrate --env=testing --database=sqlite --force
+
+      # run tests with phpunit or codecept
+      #- run: ./vendor/bin/phpunit
+      #- run: ./vendor/bin/codecept build
+      #- run: ./vendor/bin/codecept run
+      - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpunit -c ./packges/ceparadise168/cart/phpunit.xml
+```
+
+成功
+![](https://i.imgur.com/tMgwDhf.png)
+
+
 References:
 
 [Laravel Packages Development 套件開發](http://kejyun.github.io/Laravel-5-Learning-Notes-Books/package/development/package-development-README.html)
-
 [【Laravel 5】撰寫你的package](https://medium.com/back-ends/laravel-5-%E6%92%B0%E5%AF%AB%E4%BD%A0%E7%9A%84package-458c93c279bc)
-
 [開發 Laravel 獨立套件，透過 Composer 發佈到公司內部重複使用](https://devs.tw/post/186)
-
 [單元測試開發購物車功能 系列](https://ithelp.ithome.com.tw/users/20065818/ironman/1673)
-
 [composer.json 架构](https://docs.phpcomposer.com/04-schema.html)
 [Composer 自动加载原理分析](http://silverd.cn/2018/06/02/composer-autoload.html)
