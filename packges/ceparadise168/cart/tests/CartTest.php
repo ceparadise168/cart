@@ -15,11 +15,8 @@ class CartTest extends TestCase
     public function testPutItemToCartAndAssertCartItem()
     {
         $cart = new Cart();
-        $item = [
-            'name' => 'pen',
-            'price' => 100,
-            'qty' => 1
-        ];
+
+        $item = $this->createItem('x', 100, 1);
         $cart->putItem($item);
 
         $this->assertEquals([], array_diff_assoc($item, $cart->getItems()[0]));
@@ -29,18 +26,10 @@ class CartTest extends TestCase
     {
         $cart = new Cart();
 
-        $item = [
-            'name' => 'pen',
-            'price' => 100,
-            'qty' => 1
-        ];
+        $item = $this->createItem('x', 100, 1);
         $cart->putItem($item);
 
-        $item = [
-            'name' => 'eraser',
-            'price' => 200,
-            'qty' => 2
-        ];
+        $item = $this->createItem('y', 200, 2);
         $cart->putItem($item);
 
         $this->assertEquals(500, $cart->total());
@@ -50,20 +39,17 @@ class CartTest extends TestCase
     {
         $cart = new Cart();
 
-        $item = [
-            'name' => 'pen',
-            'price' => 100,
-            'qty' => 1
-        ];
+        $item = $this->createItem('x', 100, 1);
         $cart->putItem($item);
 
-        $item = [
-            'name' => 'eraser',
-            'price' => 200,
-            'qty' => 2
-        ];
+        $item = $this->createItem('y', 200, 2);
         $cart->putItem($item);
 
         $this->assertEquals(3, $cart->getTotalQuantity());
+    }
+
+    public function createItem($name, $price, $qty)
+    {
+        return compact('name', 'price', 'qty');
     }
 }
