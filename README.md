@@ -627,8 +627,13 @@ Date:   Thu Jul 9 02:08:41 2020 +0800
 References:
 
 [Laravel Packages Development 套件開發](http://kejyun.github.io/Laravel-5-Learning-Notes-Books/package/development/package-development-README.html)
+
 [【Laravel 5】撰寫你的package](https://medium.com/back-ends/laravel-5-%E6%92%B0%E5%AF%AB%E4%BD%A0%E7%9A%84package-458c93c279bc)
+
 [開發 Laravel 獨立套件，透過 Composer 發佈到公司內部重複使用](https://devs.tw/post/186)
+
 [單元測試開發購物車功能 系列](https://ithelp.ithome.com.tw/users/20065818/ironman/1673)
+
 [composer.json 架构](https://docs.phpcomposer.com/04-schema.html)
+
 [Composer 自动加载原理分析](http://silverd.cn/2018/06/02/composer-autoload.html)
