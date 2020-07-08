@@ -49,8 +49,11 @@ jobs:
             - node_modules
 
       # prepare the database
+      - run: cp .env.example .env.testing
+      - run: sed  's/DB_CONNECTION=mysql/DB_CONNECTION=sqlite/'  .env.testing
+      - run: sed  's/DB_DATABASE=laravel/DB_DATABASE=:memory:/'  .env.testing
       - run: touch storage/testing.sqlite
-      - run: php artisan migrate --env=testing --database=sqlite_testing --force
+      - run: php artisan migrate --env=testing --database=sqlite --force
 
       # run tests with phpunit or codecept
       #- run: ./vendor/bin/phpunit
