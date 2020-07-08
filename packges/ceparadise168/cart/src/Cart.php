@@ -5,6 +5,7 @@ namespace Ceparadise168\Cart;
 class Cart
 {
     private $items = [];
+
     public function result()
     {
         return 'test';
